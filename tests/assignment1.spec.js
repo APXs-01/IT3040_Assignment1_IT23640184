@@ -257,5 +257,6 @@ test.describe('Singlish to Sinhala Conversion Tests', () => {
     await expect(singlishInput).toBeEmpty();
     
     await expect(sinhalaOutput).toHaveText('');
-});
+  });
+  
 });
