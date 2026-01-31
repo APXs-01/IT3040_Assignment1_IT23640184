@@ -1,11 +1,8 @@
-// assignment1.spec.js
+
 const { test, expect } = require('@playwright/test');
 
 test.describe('Singlish to Sinhala Conversion Tests', () => {
 
-  // -------------------------------------------------------------------------
-  // STEP 1: DEFINE YOUR TEST CASES
-  // -------------------------------------------------------------------------
   const testCases = [
     
     // --- POSITIVE SCENARIO ---
@@ -154,7 +151,7 @@ test.describe('Singlish to Sinhala Conversion Tests', () => {
       description: 'Verify Paragraph-style input (medium/long)'
     },
     
-    // --- NEGATIVE SCENARIO (Robustness Test) ---
+    // --- NEGATIVE SCENARIO
     {
       id: 'Neg_Fun_01',
       input: 'meeka thamaa magee password eka ( S@fa2001 )',
@@ -216,68 +213,49 @@ test.describe('Singlish to Sinhala Conversion Tests', () => {
       description: 'Complex future tense error'
     },
 
-    // --- ADD YOUR REMAINING TEST CASES BELOW THIS LINE ---
+
 
   ];
 
-  // -------------------------------------------------------------------------
-  // STEP 2: FUNCTIONAL TEST AUTOMATION LOGIC
-  // -------------------------------------------------------------------------
   for (const data of testCases) {
     test(`${data.id}: ${data.description}`, async ({ page }) => {
       
-      // 1. Open the website
       await page.goto('https://www.swifttranslator.com/');
 
-      // 2. Type the Singlish input
       await page.getByPlaceholder('Input Your Singlish Text Here.').fill(data.input);
 
-      // 3. Wait for the translation to appear
       await page.waitForTimeout(3000); 
 
-      // 4. CAPTURE ACTUAL OUTPUT
-      // FIX: Targeting the Output DIV using its specific class (bg-slate-50)
-      // We use .first() in case there are multiple, but this class is usually unique to the output box.
       const outputLocator = page.locator('div.bg-slate-50').first();
-      
-      // FIX: Using innerText() because it is a <div>, not an input box
+     
       const actualOutput = await outputLocator.innerText();
 
-      // 5. LOG THE RESULT (Check your VS Code Terminal for this!)
       console.log(`---------------------------------------------------`);
       console.log(`[${data.id}] Input:    "${data.input}"`);
       console.log(`           Expected: "${data.expected}"`);
       console.log(`           Actual:   "${actualOutput.trim()}"`);
       console.log(`---------------------------------------------------`);
 
-      // 6. VERIFY
-      // This will check if the text inside the box matches your expectation.
+  
       expect(actualOutput.trim()).toBe(data.expected);
     });
   }
 
   test('Pos_UI_0001: Verify Clear button functionality', async ({ page }) => {
-    // 1. Open the website
+
     await page.goto('https://www.swifttranslator.com/');
 
-    // 2. Locate the Singlish input field
     const singlishInput = page.getByPlaceholder('Input Your Singlish Text Here.');
     
-    // 3. Locate the Sinhala output box specifically
-    // We target the area within the Sinhala card that actually holds the output text
     const sinhalaOutput = page.locator('.col-span-12').nth(1).locator('div[contenteditable="true"], [role="textbox"], textarea').first();
 
-    // 4. Enter a test sentence (Input Length Type: S)
     const testInput = 'mama gedhara yanavaa';
     await singlishInput.fill(testInput);
 
-    // 5. Click the 'Clear' button using the exact aria-label from your DevTools
     await page.locator('button[aria-label="Clear"]').click();
 
-    // 6. Verify accuracy: Check that the internal text of both fields is now empty
     await expect(singlishInput).toBeEmpty();
     
-    // Check that the specific output area contains no text
     await expect(sinhalaOutput).toHaveText('');
 });
 });
